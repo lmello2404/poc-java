@@ -28,15 +28,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.PAT_TOKEN_REGISTRY }}  # O GITHUB_TOKEN já é configurado automaticamente no GitHub Actions
 
+
+      - name: gerar hash baseado no timestamp
+        run: |
+          timestamp=$(date +%s)  # Pega o timestamp atual em segundos
+          hash=$(echo -n "$timestamp" | shasum -a 256 | awk '{ print $1 }')
+          echo "hash=$hash" >> $GITHUB_ENV
+          echo "Generated hash from timestamp: $hash"
+
       # Step 4: Construir a imagem Docker
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/meu-app:${{ github.sha }} .
+          docker build -t ghcr.io/${{ github.repository }}/meu-app:${{ env.hash  }} .
           
       # Step 5: Fazer o push da imagem para o GitHub Container Registry (GHCR)
       - name: Push Docker image to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository }}/meu-app:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}/meu-app:${{ env.hash  }}
           
 
   

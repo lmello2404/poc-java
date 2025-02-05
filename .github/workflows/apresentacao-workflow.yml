@@ -1,0 +1,25 @@
+name: Workflow com Artefatos
+
+on: [workflow_dispatch]
+
+jobs:
+  build_artifact:
+    runs-on: ubuntu-20.04  # maquina utilizada para rodar o worflow
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v2 # realiza o checkout do projeto
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v4 # configura versão do Java
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven        
+
+      - name: Construir com Maven
+        run: mvn clean package # realiza o build do projeto
+
+      - name: Construir Imagem
+        run: build -t minha-aplicacao:latest .  # realiza a construção da imagem
+

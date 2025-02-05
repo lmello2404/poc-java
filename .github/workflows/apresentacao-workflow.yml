@@ -20,6 +20,19 @@ jobs:
       - name: Construir com Maven
         run: mvn clean package # realiza o build do projeto
 
-      - name: Construir Imagem
-        run: docker build -t minha-aplicacao:latest .  # realiza a construção da imagem
+      - name: Construir Imagem e Realizar Push para repositorio de imagens
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/minha-imagem:latest .
+          docker push ghcr.io/${{ github.repository }}/minha-imagem:latest
+
+      - name: Logar no GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir e fazer push da imagem Docker
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/minha-imagem .
+          docker push ghcr.io/${{ github.repository }}/minha-imagem       
 

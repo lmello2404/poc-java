@@ -1,11 +1,11 @@
 name: Apresentação do workflow - Manual
 
-on:
-  workflow_dispatch:
+on: [workflow_dispatch]
 
 jobs:
-  on-workflow_dispatch:
+  build_artifact:
     runs-on: ubuntu-20.04  # maquina utilizada para rodar o worflow
+
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v2 # realiza o checkout do projeto
@@ -21,5 +21,5 @@ jobs:
         run: mvn clean package # realiza o build do projeto
 
       - name: Construir Imagem
-        run: build -t minha-aplicacao:latest .  # realiza a construção da imagem
+        run: docker build -t minha-aplicacao:latest .  # realiza a construção da imagem
 

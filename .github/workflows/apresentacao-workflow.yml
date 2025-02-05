@@ -1,6 +1,7 @@
-name: Workflow com Artefatos
+name: Apresentação do workflow - Manual
 
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
 
 jobs:
   build_artifact:

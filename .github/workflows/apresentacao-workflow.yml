@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_artifact:
+  on-workflow_dispatch:
     runs-on: ubuntu-20.04  # maquina utilizada para rodar o worflow
-
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v2 # realiza o checkout do projeto

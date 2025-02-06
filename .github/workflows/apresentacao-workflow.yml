@@ -1,9 +1,9 @@
 name: Apresentação do workflow - Manual
 
-on: [workflow_dispatch]
+on: [push,workflow_dispatch]
 
 jobs:
-  build_artifact:
+  build_and_push:
     runs-on: ubuntu-20.04
 
     steps:
@@ -20,13 +20,13 @@ jobs:
       - name: Construir com Maven
         run: mvn clean package
 
-      # Step 3: Login no GitHub Container Registry (GHCR)
+      
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.PAT_TOKEN_REGISTRY }}  # O GITHUB_TOKEN já é configurado automaticamente no GitHub Actions
+          password: ${{ secrets.PAT_TOKEN_REGISTRY }}  # Necessário criar um PAT com permissoes para ler e escrever no repositorio do github
 
 
       - name: gerar hash baseado no timestamp
@@ -36,12 +36,12 @@ jobs:
           echo "hash=$hash" >> $GITHUB_ENV
           echo "Generated hash from timestamp: $hash"
 
-      # Step 4: Construir a imagem Docker
+
       - name: Build Docker image
         run: |
           docker build -t ghcr.io/${{ github.repository }}/meu-app:${{ env.hash  }} .
           
-      # Step 5: Fazer o push da imagem para o GitHub Container Registry (GHCR)
+
       - name: Push Docker image to GHCR
         run: |
           docker push ghcr.io/${{ github.repository }}/meu-app:${{ env.hash  }}

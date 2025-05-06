@@ -1,17 +1,29 @@
-# Etapa 2: Criar a imagem final para execução
-FROM eclipse-temurin:21-jre-alpine AS build
+# Etapa 1: Build do projeto com Maven
+FROM maven:3.9.4-eclipse-temurin-21 AS builder
 
-# Define o diretório de trabalho dentro do contêiner
+# Diretório de trabalho dentro do container
 WORKDIR /app
 
-# Cria um argumento para o nome da aplicação
-ARG JAR_FILE=target/*.jar
+# Copia os arquivos de configuração do Maven
+COPY pom.xml .
 
-# Copia o jar compilado da etapa anterior
-COPY ${JAR_FILE} app.jar
+# Copia o restante dos arquivos do projeto
+COPY . .
+
+# Executa o build do projeto
+RUN mvn clean install -DskipTests
+
+# Etapa 2: Imagem de execução com Java 21 (mais leve)
+FROM eclipse-temurin:21-jdk
+
+# Diretório de trabalho
+WORKDIR /app
+
+# Copia o artefato gerado na etapa de build
+COPY --from=builder /app/target/*.jar app.jar
 
 # Expõe a porta da aplicação
 EXPOSE 8080
 
-# Define o comando padrão para rodar a aplicação
+# Comando para rodar a aplicação
 CMD ["java", "-jar", "app.jar"]
